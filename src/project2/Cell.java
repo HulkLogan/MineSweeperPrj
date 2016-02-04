@@ -18,6 +18,9 @@ public class Cell {
     
     /**int for the number of neighbors that are mines**/
     private int neighbors = 0;
+
+
+    //test notes
     
    /******************************************************************
     * Creates a Cell with one parameter, an integer

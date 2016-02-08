@@ -37,6 +37,24 @@ public class MineSweeperGame {
 	public Cell getCell(int row, int col) {
 		return board[row][col];
 	}
+	public void getNeighbors(int row, int col) {
+		neighborMineCount = 0;
+		neighbors = new Cell[8];
+		neighbors[0] = board[row+1][col];
+		neighbors[1] = board[row-1][col];
+		neighbors[2] = board[row][col+1];
+		neighbors[3] = board[row][col-1];
+		neighbors[4] = board[row+1][col+1];
+		neighbors[5] = board[row+1][col-1];
+		neighbors[6] = board[row-1][col+1];
+		neighbors[7] = board[row-1][col-1];
+		for(int i=0; i<8; i++) {
+			if(neighbors[i].isCoveredMine()){
+				
+				neighborMineCount++;
+			}
+		}
+	}
 
 	public void select(int row, int col) {
 		board[row][col].setUncovered();

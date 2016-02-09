@@ -1,39 +1,47 @@
 package project2;
 
-import java.util.*;
+import java.awt.Panel;
+import java.util.Random;
 
 public class MineSweeperGame {
 	private Cell[][] board;
 	private GameStatus status;
 	
-	/**holds the difficulty value as an int**/
-	public int diffVal = 10;
-	
-	/**holds the amount of mines to be placed**/
-	public int mineNum = 24;
-	
-   /**
-	* holds the amount of covered, marked, mines (CMM), essential for
-	* winning.
-	*/
+	//holds the difficulty value as an int**/
+//	public int diffValue;
+	public int mineCount;
+	//public int mineNum;
+	public int neighborMineCount = 0;
+	//holds the amount of covered, marked, mines (CMM)
 	private int CMM = 0;
+	private Cell currentCell;
+	private Cell[] neighbors;
 	
-	private int currentCell;
-	
+	public int getDiffVal() {
+		int diffValue = MineSweeperPanel.getDiffValue();
+		return diffValue;
+	}
+
+	public int getMineNum() {
+		int mineNum = MineSweeperPanel.getMineNum();
+		return mineNum;
+	}
 
 	public MineSweeperGame() {
 		status = GameStatus.NotOverYet;
-		board = new Cell[diffVal][diffVal];
+		board = new Cell[getDiffVal()][getDiffVal()];
 		setEmpty();
-		layMines (mineNum);
-	}
-
-	private void setEmpty() {
-		for (int r = 0; r < diffVal; r++)
-			for (int c = 0; c < diffVal; c++)
-				board[r][c] = new Cell(10);  // totally clear.
+		layMines(getMineNum());
 	}
 	
+	private void setEmpty() {
+		for (int r = 0; r < getDiffVal(); r++) {
+			for(int c=0; c < getDiffVal(); c++) {
+				board[r][c] = new Cell(getDiffVal()); //totally clean.
+			}
+		}
+
+	}
 	public Cell getCell(int row, int col) {
 		return board[row][col];
 	}
@@ -55,69 +63,81 @@ public class MineSweeperGame {
 			}
 		}
 	}
-
+	public int getNeighborMineCount() {
+		return neighborMineCount;
+	}
 	public void select(int row, int col) {
-		board[row][col].setUncovered();
-
-		if (board[row][col].isUncoveredMine())   // did I lose
-			status = GameStatus.Lost;
+		if(board[row][col].isUncovered() || board[row][col].isFlagged()) {
+			
+		}
 		else {
-			status = GameStatus.Won;    // did I win
-			for (int r = 0; r < diffVal; r++)     // are only mines left
-				for (int c = 0; c < diffVal; c++)
-					if (!board[r][c].isUncovered()){
-						if(board[r][c].isCoveredMarkedMine()){
-							CMM += 1;
-							if((CMM == mineNum)){
-								//throw to win
-							}
+		board[row][col].setUncovered();
+		
+		if(board[row][col].isUncoveredMine()) {
+			status = GameStatus.Lost;
+		}
+		else {
+			status = GameStatus.Won;
+			for (int r = 0; r < getDiffVal(); r++) {
+				for (int c = 0; c < getDiffVal(); c++) {
+					if(board[r][c].isCovered() && board[r][c].isFlaggedMine()) {
+						if(CMM == getMineNum()) {
+							status = GameStatus.Won;
 						}
-						else{
+					}
+						else {
 							status = GameStatus.NotOverYet;
 						}
-					}	
+					}
+				}
+			}
+			}
+		}
+	public void flag(int row, int col) {
+		if(board[row][col].isFlagged()) {
+			board[row][col].unFlag();
+			CMM--;
+		}
+		else {
+		board[row][col].setFlagged();
+		CMM++;
+		for (int r = 0; r < getDiffVal(); r++) {
+			for (int c = 0; c < getDiffVal(); c++) {
+				if(board[r][c].isCovered() && board[r][c].isFlaggedMine()) {
+					//if(CMM == mineNum) {
+						status = GameStatus.Won;
+					//}
+				}
+				else {
+					status = GameStatus.NotOverYet;
+				}
+			}
+		}
 		}
 	}
-
 	public GameStatus getGameStatus() {
 		return status;
 	}
-
 	public void reset() {
 		status = GameStatus.NotOverYet;
 		setEmpty();
-		layMines (mineNum);
+		layMines(getMineNum());
 	}
-
-	private void layMines(int mineCount) {
+	public void layMines(int mineNum) {
 		int i = 0;		// ensure all mines are set in place
 
 		Random random = new Random();
-		while (i < mineCount) {			// perhaps the loop will never end :)
-			int c = random.nextInt(diffVal);
-			int r = random.nextInt(diffVal);
+		while (i < mineNum) {			// perhaps the loop will never end :)
+			int c = random.nextInt(getDiffVal());
+			int r = random.nextInt(getDiffVal());
 
-			if (!board[r][c].isMine()) {
-				board[r][c].setMine(true);
+			if (board[r][c].getCellValue() == 10) {
+				board[r][c].setMine();
 				i++;
 			}
 		}
 	}
-
-	public int getDiffVal() {
-		return diffVal;
-	}
-
-	public void setDiffVal(int diffVal) {
-		this.diffVal = diffVal;
-	}
-
-	public int getMineNum() {
-		return mineNum;
-	}
-
-	public void setMineNum(int mineNum) {
-		this.mineNum = mineNum;
-	}
-	
 }
+
+
+

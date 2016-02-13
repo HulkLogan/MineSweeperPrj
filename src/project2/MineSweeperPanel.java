@@ -1,10 +1,9 @@
 package project2;
 
 /**
+ /**
  * Created by Jake Young on 2/11/2016.
  */
-    import org.omg.CORBA.IMP_LIMIT;
-
     import javax.swing.*;
     import java.awt.*;
     import java.awt.event.*;

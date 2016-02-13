@@ -82,9 +82,9 @@ public class MineSweeperGame {
         board[row][col].setUncovered();
         if (board[row][col].isUncoveredMine())   // did I lose
             status = GameStatus.Lost;
+        else if (board[row][col].getCellValue() == 0)
+            uncover(row, col);
         else {
-            board[row][col].setUncovered();
-            //uncover(row, col);
             status = GameStatus.Won;
             for (int r = 0; r < diffValue; r++) {
                 for (int c = 0; c < diffValue; c++) {
@@ -114,47 +114,37 @@ public class MineSweeperGame {
             }
         }
 
-    //public void uncover(int r, int c) {
-      //  if(board[r][c].getCellValue() == 0) {
-        //    for(int a = r-1; a <= r+1; a++) {
-          //      for (int b = c-1; b <= c+1; b++) {
-            //        if(board[a][b].getCellValue() > 9 || board[a][b].getCellValue() < 19) {
-              //          board[a][b].setUncovered();
-                //    }
-                //}
-            //}
-        //}
-        /**
+    public void uncover(int r, int c) {
         board[r][c].setCellValue(0);
-        for(int a = 0; a < diffValue; a++) {
-            for(int b = 0; b < diffValue; b++) {
-                if((a < 0 || a > diffValue) || (b < 0 || b > diffValue)) {
-                    return;
-                }
-                else {
+        for(int a = r-1; a <= r+1; a++) {
+            for(int b = c-1; b <= c+1; b++) {
+                if(!(a < 0 || a > diffValue-1 || b < 0 || b > diffValue-1) && !((a==r) && (b==c))) {
                     uncoverCell(a, b);
                 }
             }
         }
-         */
+    }
 
-    //public void uncoverCell(int r, int c){
-      //  if(board[r][c].isMarked()){
-        //    return;
-        //}
-        //if(board[r][c].isUncovered()){
-          //  return;
-        //}
-        //if(board[r][c].getCellValue() == 19){
-          //  return;
-        //}
-        //if(board[r][c].getCellValue() == 10){
-          //  uncover(r,c);
-        //}
-        //else{
-          //  board[r][c].setCellValue(board[r][c].getCellValue()-10);
-        //}
-    //}
+    public void uncoverCell(int r, int c){
+        /*if(board[r][c].isMarked()){
+            return;
+        }
+        if(board[r][c].isUncovered()){
+            return;
+        }
+        if(board[r][c].getCellValue() == 19){
+            return;
+        }*/
+        if(board[r][c].getCellValue() == 10){
+            uncover(r,c);
+        }
+        if(board[r][c].getCellValue() > 10 && board[r][c].getCellValue() < 19){
+            board[r][c].setCellValue(board[r][c].getCellValue()-10);
+        }
+        else {
+
+        }
+    }
 
 
     public GameStatus getGameStatus() {
@@ -185,3 +175,4 @@ public class MineSweeperGame {
         }
     }
 }
+

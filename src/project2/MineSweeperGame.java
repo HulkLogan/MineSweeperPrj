@@ -1,143 +1,187 @@
 package project2;
 
-import java.awt.Panel;
+import javax.swing.*;
 import java.util.Random;
 
+/**
+ * Created by Jake Young on 2/11/2016.
+ */
 public class MineSweeperGame {
-	private Cell[][] board;
-	private GameStatus status;
-	
-	//holds the difficulty value as an int**/
-//	public int diffValue;
-	public int mineCount;
-	//public int mineNum;
-	public int neighborMineCount = 0;
-	//holds the amount of covered, marked, mines (CMM)
-	private int CMM = 0;
-	private Cell currentCell;
-	private Cell[] neighbors;
-	
-	public int getDiffVal() {
-		int diffValue = MineSweeperPanel.getDiffValue();
-		return diffValue;
-	}
+    private Cell[][] board;
+    private GameStatus status;
+    public static int diffValue;
+    public static int mineNum;
+    private Cell neighbors[];
+    private Cell currentCell;
 
-	public int getMineNum() {
-		int mineNum = MineSweeperPanel.getMineNum();
-		return mineNum;
-	}
+    String x = JOptionPane.showInputDialog(null, "Enter board size: ");
+    String y = JOptionPane.showInputDialog(null, "Enter the amount of mines: ");
 
-	public MineSweeperGame() {
-		status = GameStatus.NotOverYet;
-		board = new Cell[getDiffVal()][getDiffVal()];
-		setEmpty();
-		layMines(getMineNum());
-	}
-	
-	private void setEmpty() {
-		for (int r = 0; r < getDiffVal(); r++) {
-			for(int c=0; c < getDiffVal(); c++) {
-				board[r][c] = new Cell(getDiffVal()); //totally clean.
-			}
-		}
+    public int getDiffValue() {
+        //set up if statements on joptionpane use try catch
+        diffValue = Integer.parseInt(x);
+        return diffValue;
+    }
 
-	}
-	public Cell getCell(int row, int col) {
-		return board[row][col];
-	}
-	public void getNeighbors(int row, int col) {
-		neighborMineCount = 0;
-		neighbors = new Cell[8];
-		neighbors[0] = board[row+1][col];
-		neighbors[1] = board[row-1][col];
-		neighbors[2] = board[row][col+1];
-		neighbors[3] = board[row][col-1];
-		neighbors[4] = board[row+1][col+1];
-		neighbors[5] = board[row+1][col-1];
-		neighbors[6] = board[row-1][col+1];
-		neighbors[7] = board[row-1][col-1];
-		for(int i=0; i<8; i++) {
-			if(neighbors[i].isCoveredMine()){
-				
-				neighborMineCount++;
-			}
-		}
-	}
-	public int getNeighborMineCount() {
-		return neighborMineCount;
-	}
-	public void select(int row, int col) {
-		if(board[row][col].isUncovered() || board[row][col].isFlagged()) {
-			
-		}
-		else {
-		board[row][col].setUncovered();
-		
-		if(board[row][col].isUncoveredMine()) {
-			status = GameStatus.Lost;
-		}
-		else {
-			status = GameStatus.Won;
-			for (int r = 0; r < getDiffVal(); r++) {
-				for (int c = 0; c < getDiffVal(); c++) {
-					if(board[r][c].isCovered() && board[r][c].isFlaggedMine()) {
-						if(CMM == getMineNum()) {
-							status = GameStatus.Won;
-						}
-					}
-						else {
-							status = GameStatus.NotOverYet;
-						}
-					}
-				}
-			}
-			}
-		}
-	public void flag(int row, int col) {
-		if(board[row][col].isFlagged()) {
-			board[row][col].unFlag();
-			CMM--;
-		}
-		else {
-		board[row][col].setFlagged();
-		CMM++;
-		for (int r = 0; r < getDiffVal(); r++) {
-			for (int c = 0; c < getDiffVal(); c++) {
-				if(board[r][c].isCovered() && board[r][c].isFlaggedMine()) {
-					//if(CMM == mineNum) {
-						status = GameStatus.Won;
-					//}
-				}
-				else {
-					status = GameStatus.NotOverYet;
-				}
-			}
-		}
-		}
-	}
-	public GameStatus getGameStatus() {
-		return status;
-	}
-	public void reset() {
-		status = GameStatus.NotOverYet;
-		setEmpty();
-		layMines(getMineNum());
-	}
-	public void layMines(int mineNum) {
-		int i = 0;		// ensure all mines are set in place
+    public int getMineNum() {
+        //set up if statements
+        mineNum = Integer.parseInt(y);
+        return mineNum;
+    }
 
-		Random random = new Random();
-		while (i < mineNum) {			// perhaps the loop will never end :)
-			int c = random.nextInt(getDiffVal());
-			int r = random.nextInt(getDiffVal());
+    public MineSweeperGame() {
+        getDiffValue();
+        getMineNum();
+        status = GameStatus.NotOverYet;
+        board = new Cell[diffValue][diffValue];
+        setEmpty();
+        layMines (mineNum);
+        getNeighbors();
+    }
 
-			if (board[r][c].getCellValue() == 10) {
-				board[r][c].setMine();
-				i++;
-			}
-		}
-	}
+    private void getNeighbors() {
+        for(int r = 0; r < diffValue; r++) {
+            for (int c = 0; c < diffValue; c++) {
+                if(!board[r][c].isCoveredMine()) {
+                    for(int a = r-1; a <= r+1; a++) {
+                        for (int b = c-1; b <= c+1; b++) {
+                            if(isMine(a, b)) {
+                                board[r][c].incrementCellValue();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isMine(int r, int c) {
+        if((r < 0 || r >= diffValue) || (c < 0 || c >= diffValue)) {
+            return false;
+        }
+        if(board[r][c].isCoveredMine()) {
+            return true;
+        }
+        return false;
+    }
+
+    private void setEmpty() {
+        for (int r = 0; r < diffValue; r++) {
+            for (int c = 0; c < diffValue; c++) {
+                board[r][c] = new Cell(0);
+                board[r][c].setCovered();
+            }
+        }
+    }
+
+    public Cell getCell(int row, int col) {
+        return board[row][col];
+    }
+
+    public void select(int row, int col) {
+        board[row][col].setUncovered();
+        if (board[row][col].isUncoveredMine())   // did I lose
+            status = GameStatus.Lost;
+        else {
+            board[row][col].setUncovered();
+            //uncover(row, col);
+            status = GameStatus.Won;
+            for (int r = 0; r < diffValue; r++) {
+                for (int c = 0; c < diffValue; c++) {
+                    if (board[r][c].isCoveredMarkedMine()) { //checks for the win
+                        status = GameStatus.Won;
+                    }
+                    else {
+                        status = GameStatus.NotOverYet;
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void flag(int row, int col) {
+        board[row][col].setMarked();
+            for (int r = 0; r < diffValue; r++) {
+                for (int c = 0; c < diffValue; c++) {
+                    if(board[r][c].isCoveredEmpty() && board[r][c].isMarked()) { //checks for the win
+                        status = GameStatus.Won;
+                    }
+                    else {
+                        status = GameStatus.NotOverYet;
+                    }
+                }
+            }
+        }
+
+    //public void uncover(int r, int c) {
+      //  if(board[r][c].getCellValue() == 0) {
+        //    for(int a = r-1; a <= r+1; a++) {
+          //      for (int b = c-1; b <= c+1; b++) {
+            //        if(board[a][b].getCellValue() > 9 || board[a][b].getCellValue() < 19) {
+              //          board[a][b].setUncovered();
+                //    }
+                //}
+            //}
+        //}
+        /**
+        board[r][c].setCellValue(0);
+        for(int a = 0; a < diffValue; a++) {
+            for(int b = 0; b < diffValue; b++) {
+                if((a < 0 || a > diffValue) || (b < 0 || b > diffValue)) {
+                    return;
+                }
+                else {
+                    uncoverCell(a, b);
+                }
+            }
+        }
+         */
+
+    //public void uncoverCell(int r, int c){
+      //  if(board[r][c].isMarked()){
+        //    return;
+        //}
+        //if(board[r][c].isUncovered()){
+          //  return;
+        //}
+        //if(board[r][c].getCellValue() == 19){
+          //  return;
+        //}
+        //if(board[r][c].getCellValue() == 10){
+          //  uncover(r,c);
+        //}
+        //else{
+          //  board[r][c].setCellValue(board[r][c].getCellValue()-10);
+        //}
+    //}
+
+
+    public GameStatus getGameStatus() {
+        return status;
+    }
+
+    public void reset() {
+        getDiffValue();
+        getMineNum();
+        status = GameStatus.NotOverYet;
+        setEmpty();
+        layMines (mineNum);
+        getNeighbors();
+    }
+
+    private void layMines(int mineCount) {
+        int i = 0;		// ensure all mines are set in place
+
+        Random random = new Random();
+        while (i < mineCount) {			// perhaps the loop will never end :)
+            int c = random.nextInt(diffValue);
+            int r = random.nextInt(diffValue);
+
+            if (!board[r][c].isCoveredMine()) {
+                board[r][c].setMine();
+                i++;
+            }
+        }
+    }
 }
-
-
-

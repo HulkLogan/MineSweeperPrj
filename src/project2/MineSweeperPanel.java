@@ -40,11 +40,9 @@ public class MineSweeperPanel extends JPanel {
         Image newImg = img.getScaledInstance(25, 25, 0);
         newIcon = new ImageIcon(newImg);
 
-        //fixes the size of the flag
-        //ImageIcon icon1 = new ImageIcon(getClass().getResource("/images/flag.png"));
-        //Image img1 = icon1.getImage();
-        //Image newImg1 = img1.getScaledInstance(25, 25, 0);
-        //newFlagIcon = new ImageIcon(newImg1);
+        //sets flag icon,(not working)
+        newFlagIcon = new ImageIcon(getClass().getResource("/images/flag.png"));
+        
 
         game = new MineSweeperGame();
 
@@ -84,7 +82,7 @@ public class MineSweeperPanel extends JPanel {
         for (int r = 0; r < game.getDiffValue(); r++) {
             for (int c = 0; c < game.getDiffValue(); c++) {
                 iCell = game.getCell(r, c);
-                if(iCell.isCoveredMine()) {
+                if(iCell.isCoveredMine() || iCell.isUncoveredMine()) {
                     board[r][c].setEnabled(false);
                     board[r][c].setIcon(newIcon);
                 }
@@ -106,11 +104,11 @@ public class MineSweeperPanel extends JPanel {
                 iCell = game.getCell(r, c);
                 String output = Integer.toString(iCell.getCellValue());
                 board[r][c].setText("  ");
-                //board[r][c].setText(output); for debugging purposes
+                //board[r][c].setText(output); //for debugging purposes
 
                 // sets symbols on board
                 if (iCell.isMarkedEmpty() || iCell.isCoveredMarkedMine()) {
-                    //board[r][c].setIcon(newFlagIcon); icon not showing up for some reason
+                	//board[r][c].setIcon(newFlagIcon);//not working for some reason
                     board[r][c].setText("*");
                 }
                 if(board[r][c].isEnabled()) {
